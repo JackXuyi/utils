@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./scripts/rollup.prod.config.js",
     "dev": "node ./scripts/rollup.dev.config.js",
-    "publish": "npm run build && npm run publish"
+    "publish": "npm run build && npm run publish --access public"
   },
   "repository": {
     "type": "git",
