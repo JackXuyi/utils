@@ -59,17 +59,17 @@ export function getTarget(event: Event) {
 }
 
 // 获取event对象的引用，取到事件的所有信息，确保随时能使用event；
-export function getEvent(e: Event) {
-  let ev = e || window.event;
-  if (!ev) {
-    let c = (this as any).getEvent.caller;
-    while (c) {
-      ev = c.arguments[0];
-      if (ev && Event === ev.constructor) {
-        break;
-      }
-      c = c.caller;
-    }
-  }
-  return ev;
-}
+// export function getEvent(e: Event) {
+//   let ev = e || window.event;
+//   if (!ev) {
+//     let c = (this as any).getEvent.caller;
+//     while (c) {
+//       ev = c.arguments[0];
+//       if (ev && Event === ev.constructor) {
+//         break;
+//       }
+//       c = c.caller;
+//     }
+//   }
+//   return ev;
+// }

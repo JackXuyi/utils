@@ -17,5 +17,7 @@
       "@service/*": ["src/service/*"],
       "@constant/*": ["src/constant/*"]
     }
-  }
+  },
+  "skipLibCheck": true,
+  "skipDefaultLibCheck": true
 }
