@@ -12,7 +12,7 @@
     "build": "gulp -f ./scripts/gulp.prod.js",
     "dev": "node ./scripts/rollup.dev.config.js",
     "deploy": "npm run build && npm version patch && npm publish --access public",
-    "deploy:next": "npm run build && npm version prerelease --preid=alpha && npm publish --access public --tag=next",
+    "deploy:next": "npm run build && npm version prerelease --preid=next && npm publish --access public --tag=next",
     "deploy:beta": "npm run build && npm version prerelease --preid=beta && npm publish --access public --tag=beta"
   },
   "repository": {
@@ -31,11 +31,6 @@
     "url": "https://github.com/JackXuyi/utils/issues"
   },
   "homepage": "https://github.com/JackXuyi/utils#readme",
-  "dependencies": {
-    "gulp-typescript": "^6.0.0-alpha.1",
-    "rollup": "^2.3.3",
-    "typescript": "^3.8.3"
-  },
   "files": [
     "dist/",
     "es/",
@@ -73,6 +68,9 @@
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",
     "rollup-plugin-typescript2": "^0.27.0",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "^26.4.4",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "rollup": "^2.3.3",
+    "typescript": "^3.8.3"
   }
 }
