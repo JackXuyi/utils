@@ -1,75 +1,112 @@
-// 阻止事件 (主要是事件冒泡，因为IE不支持事件捕获)
-export function stopPropagation(e: Event) {
-  const event = e || window.event;
-  if (event && event.stopPropagation) {
-    event.stopPropagation();
-  } else {
-    event.cancelBubble = true;
+interface TEvent {
+  timestamp: number
+  value?: any
+}
+
+type EventCallback = (e: TEvent) => void
+
+interface IEvent {
+  addEventListener: (type: string, callback: EventCallback) => void
+  removeEventListener: (type: string, callback: EventCallback) => boolean
+  removeAllEventListener: (type?: string) => boolean
+  dispatchEvent: (type: string, value?: any) => void
+}
+
+function buildEventParam(value?: any) {
+  return {
+    value,
+    timestamp: Date.now(),
   }
 }
 
-// 分别使用dom0||dom2||IE方式 来绑定事件
-// 下面的顺序：标准dom2，IE dom2， dom
-// 参数： 操作的元素,事件名称 ,事件处理程序
-export function addEvent<K extends keyof WindowEventMap>(
-  element: EventTarget,
-  type: WindowEventMap[K],
-  listener: (this: Window, ev: WindowEventMap[K]) => any
-) {
-  const ele: any = element;
-  if (ele.addEventListener) {
-    // 事件类型、需要执行的函数、是否捕捉
-    ele.addEventListener(type, listener as any, false);
-  } else if (ele.attachEvent) {
-    ele.attachEvent("on" + type, listener);
-  } else {
-    ele["on" + type] = listener;
+class CustomEvent implements IEvent {
+  static eventMap: { [key: string]: EventCallback[] } = {}
+
+  static addEventListener = (type: string, callback: EventCallback) => {
+    if (!CustomEvent.eventMap[type]) {
+      CustomEvent.eventMap[type] = []
+    }
+    if (!CustomEvent.hasEventListener(type, callback)) {
+      CustomEvent.eventMap[type].push(callback)
+    }
+  }
+
+  static removeEventListener = (type: string, callback: EventCallback) => {
+    const listeners = CustomEvent.eventMap[type] || []
+    const index = listeners.findIndex((cb) => cb === callback)
+    if (index > -1) {
+      listeners.splice(index, 1)
+      return true
+    }
+    return false
+  }
+
+  static removeAllEventListener = (type?: string) => {
+    if (type !== undefined && CustomEvent.eventMap[type]) {
+      delete CustomEvent.eventMap[type]
+    } else if (type === undefined) {
+      CustomEvent.eventMap = {}
+    }
+    return true
+  }
+
+  static dispatchEvent = (type: string, value?: any) => {
+    const listeners = CustomEvent.eventMap[type] || []
+    for (const listener of listeners) {
+      if (listener && typeof listener === 'function') {
+        listener(buildEventParam(value))
+      }
+    }
+  }
+
+  static hasEventListener = (type: string, callback: EventCallback) => {
+    const listeners = CustomEvent.eventMap[type] || []
+    return listeners.some((listener) => listener === callback)
+  }
+
+  private eventMap: { [key: string]: EventCallback[] } = {}
+
+  public addEventListener = (type: string, callback: EventCallback) => {
+    if (!this.eventMap[type]) {
+      this.eventMap[type] = []
+    }
+    if (!this.hasEventListener(type, callback)) {
+      this.eventMap[type].push(callback)
+    }
+  }
+
+  public removeEventListener = (type: string, callback: EventCallback) => {
+    const listeners = this.eventMap[type] || []
+    const index = listeners.findIndex((cb) => cb === callback)
+    if (index > -1) {
+      listeners.splice(index, 1)
+      return true
+    }
+    return false
+  }
+
+  public removeAllEventListener = (type?: string) => {
+    if (type !== undefined && this.eventMap[type]) {
+      delete this.eventMap[type]
+    } else if (type === undefined) {
+      this.eventMap = {}
+    }
+    return true
+  }
+
+  public dispatchEvent = (type: string, value?: any) => {
+    const listeners = this.eventMap[type] || []
+    for (const listener of listeners) {
+      if (listener && typeof listener === 'function') {
+        listener(buildEventParam(value))
+      }
+    }
+  }
+
+  private hasEventListener = (type: string, callback: EventCallback) => {
+    const listeners = this.eventMap[type] || []
+    return listeners.some((listener) => listener === callback)
   }
 }
 
-// 移除事件
-export function removeEvent<K extends keyof WindowEventMap>(
-  element: EventTarget,
-  type: WindowEventMap[K],
-  listener: (this: Window, ev: WindowEventMap[K]) => any
-) {
-  const ele: any = element;
-  if (ele.removeEventListener) {
-    ele.removeEventListener(type, listener, false);
-  } else if (ele.detachEvent) {
-    ele.detachEvent("on" + type, listener);
-  } else {
-    ele["on" + type] = null;
-  }
-}
-
-// 取消事件的默认行为
-export function preventDefault(event: Event) {
-  if (event.preventDefault) {
-    event.preventDefault(); // 标准w3c
-  } else {
-    event.returnValue = false; // IE
-  }
-}
-
-// 获取事件目标
-export function getTarget(event: Event) {
-  // 标准W3C 和 IE
-  return event.target || event.srcElement;
-}
-
-// 获取event对象的引用，取到事件的所有信息，确保随时能使用event；
-// export function getEvent(e: Event) {
-//   let ev = e || window.event;
-//   if (!ev) {
-//     let c = (this as any).getEvent.caller;
-//     while (c) {
-//       ev = c.arguments[0];
-//       if (ev && Event === ev.constructor) {
-//         break;
-//       }
-//       c = c.caller;
-//     }
-//   }
-//   return ev;
-// }
+export default CustomEvent

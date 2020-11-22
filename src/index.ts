@@ -1,3 +1,4 @@
-import * as event from "./event";
+import CustomEvent from './event'
+import Task from './task'
 
-export { event };
+export { CustomEvent, Task }
