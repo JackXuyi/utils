@@ -3,9 +3,6 @@
   "version": "0.0.3-beta.2",
   "description": "常用工具函数",
   "main": "lib/index.js",
-  "module": "es/index.js",
-  "typings": "lib/index.d.ts",
-  "unpkg": "dist/index.min.js",
   "scripts": {
     "test": "jest",
     "prepublish": "npm run test",
